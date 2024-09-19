@@ -55,7 +55,7 @@ def resolve_sales(info, channel_slug, **kwargs) -> ChannelQsContext:
     # DEPRECATED: remove filtering by `query` argument when it's removed from the schema
     if query := kwargs.get("query"):
         qs = filter_sale_search(qs, None, query)
-
+    qs = qs.distinct()
     return ChannelQsContext(qs=qs, channel_slug=channel_slug)
 
 

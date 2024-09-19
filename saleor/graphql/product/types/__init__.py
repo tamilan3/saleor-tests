@@ -19,6 +19,7 @@ from .products import (
 
 __all__ = [
     "Wishlist",
+    "WishlistCountableConnection",
     "Tag",
     "TagCountableConnection",
     "Category",

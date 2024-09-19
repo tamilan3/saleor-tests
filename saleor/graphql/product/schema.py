@@ -777,4 +777,4 @@ class ProductMutations(graphene.ObjectType):
     tag_update = TagUpdate.Field()
 
     wishlist_create = WishlistCreate.Field()
-    # wishlist_update = WishlistUpdate.Field()
+    wishlist_update = WishlistUpdate.Field()

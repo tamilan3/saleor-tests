@@ -10,7 +10,6 @@ from ....core.mutations import ModelMutation
 from ....core.types import BaseInputObjectType, ProductError
 from ....core.validators import validate_slug_and_generate_if_needed
 from ...types import Tag
-from ....channel import ChannelContext
 
 
 class TagInput(BaseInputObjectType):

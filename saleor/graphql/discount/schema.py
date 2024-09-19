@@ -177,6 +177,8 @@ class DiscountQueries(graphene.ObjectType):
         qs = filter_connection_queryset(
             qs, kwargs, allow_replica=info.context.allow_replica
         )
+        from icecream import ic 
+        ic(qs)
         return create_connection_slice(qs, info, kwargs, SaleCountableConnection)
 
     @staticmethod

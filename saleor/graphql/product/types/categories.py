@@ -52,6 +52,7 @@ class Category(ModelObjectType[models.Category]):
     id = graphene.GlobalID(required=True, description="The ID of the category.")
     seo_title = graphene.String(description="SEO title of category.")
     seo_description = graphene.String(description="SEO description of category.")
+    menu_order = graphene.Int(description="Menu order of the category.")
     name = graphene.String(required=True, description="Name of category")
     description = JSONString(description="Description of the category." + RICH_CONTENT)
     slug = graphene.String(required=True, description="Slug of the category.")

@@ -27,6 +27,7 @@ from ...types import Category
 class CategoryInput(BaseInputObjectType):
     description = JSONString(description="Category description." + RICH_CONTENT)
     name = graphene.String(description="Category name.")
+    menu_order = graphene.Int(description="Category menu order", required=False)
     slug = graphene.String(description="Category slug.")
     seo = SeoInput(description="Search engine optimization fields.")
     background_image = Upload(description="Background image file.")

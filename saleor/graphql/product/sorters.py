@@ -30,6 +30,7 @@ class CategorySortField(BaseEnum):
     NAME = ["name", "slug"]
     PRODUCT_COUNT = ["product_count", "name", "slug"]
     SUBCATEGORY_COUNT = ["subcategory_count", "name", "slug"]
+    MENU_ORDER = ["menu_order","name", "slug"]
 
     class Meta:
         doc_category = DOC_CATEGORY_PRODUCTS
@@ -41,6 +42,7 @@ class CategorySortField(BaseEnum):
             CategorySortField.NAME,
             CategorySortField.PRODUCT_COUNT,
             CategorySortField.SUBCATEGORY_COUNT,
+            CategorySortField.MENU_ORDER
         ]:
             sort_name = self.name.lower().replace("_", " ")
             return f"Sort categories by {sort_name}."
@@ -48,6 +50,7 @@ class CategorySortField(BaseEnum):
 
     @staticmethod
     def qs_with_product_count(queryset: QuerySet, **_kwargs) -> QuerySet:
+        print("product count",queryset)
         return queryset.annotate(
             product_count=Coalesce(
                 Subquery(
@@ -64,7 +67,13 @@ class CategorySortField(BaseEnum):
 
     @staticmethod
     def qs_with_subcategory_count(queryset: QuerySet, **_kwargs) -> QuerySet:
+        print("subcatogory count",queryset)
         return queryset.annotate(subcategory_count=Count("children__id"))
+
+    @staticmethod
+    def qs_with_menu_order(queryset: QuerySet, **_kwargs) -> QuerySet:
+        print("menu order",queryset)
+        return queryset.order_by("menu_order")
 
 
 class CategorySortingInput(ChannelSortInputObjectType):
