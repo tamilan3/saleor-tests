@@ -154,7 +154,6 @@ from ..resolvers import resolve_product_variants, resolve_products
 from ..sorters import MediaSortingInput
 from .channels import ProductChannelListing, ProductVariantChannelListing
 from .digital_contents import DigitalContent
-from .tags import TagCountableConnection
 
 destination_address_argument = graphene.Argument(
     account_types.AddressInput,

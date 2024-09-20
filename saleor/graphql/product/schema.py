@@ -135,7 +135,8 @@ from .resolvers import (
     resolve_products,
     resolve_report_product_sales,
     resolve_variant,
-    resolve_tags
+    resolve_tags,
+    resolve_wishlists
 )
 from .sorters import (
     CategorySortingInput,
@@ -385,6 +386,7 @@ class ProductQueries(graphene.ObjectType):
         WishlistCountableConnection,
         description="List of the customer's wishlists.",
         doc_category=DOC_CATEGORY_WISHLIST,
+        
     )
 
     @staticmethod
@@ -696,7 +698,14 @@ class ProductQueries(graphene.ObjectType):
     def resolve_tags(_root, info: ResolveInfo, **kwargs):
         qs = resolve_tags(info)
         return create_connection_slice(
-            qs, info, kwargs, DigitalContentCountableConnection
+            qs, info, kwargs, TagCountableConnection
+        )
+    
+    @staticmethod
+    def resolve_wishlists(_root, info: ResolveInfo, **kwargs):
+        qs = resolve_wishlists(info)
+        return create_connection_slice(
+            qs, info, kwargs, WishlistCountableConnection
         )
 
 

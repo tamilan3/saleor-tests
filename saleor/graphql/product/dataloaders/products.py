@@ -153,6 +153,14 @@ class ProductTypeByIdLoader(DataLoader[int, ProductType]):
         ).in_bulk(keys)
         return [product_types.get(product_type_id) for product_type_id in keys]
 
+class WishListByIdLoader(DataLoader[int, Product]):
+    context_key = "witshlist_by_id"
+
+    def batch_load(self, keys):
+        product = Product.objects.using(
+            self.database_connection_name
+        ).in_bulk(keys)
+        return [product.get(product_id) for product_id in keys]
 
 class MediaByProductIdLoader(DataLoader[int, list[ProductMedia]]):
     context_key = "media_by_product"

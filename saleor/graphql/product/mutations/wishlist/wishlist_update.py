@@ -32,11 +32,6 @@ class WishlistUpdate(WishlistCreate):
             raise ValidationError("User must be authenticated to create a wishlist.")
         return cleaned_input
     
-    @classmethod
-    def _save_m2m(cls, _info: ResolveInfo, instance, cleaned_data):
-        products = cleaned_data.get("products", None)
-        if products is not None:
-            instance.products.set(products)
 
     @classmethod
     def perform_mutation(cls, _root, info: ResolveInfo, /, **data):

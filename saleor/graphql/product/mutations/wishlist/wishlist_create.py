@@ -13,10 +13,10 @@ class WishlistInput(BaseInputObjectType):
     user = graphene.ID(
         description="Customer associated with the draft order.", name="user"
     )
-    products = NonNullList(
-        graphene.ID,
-        description="List of products to be added to the collection.",
+    products = graphene.ID(
+        description="List of products to be added to the collection.",name=""
     )
+    
 
     class Meta:
         doc_category = DOC_CATEGORY_WISHLIST
@@ -49,12 +49,6 @@ class WishlistCreate(ModelMutation):
         instance.search_index_dirty = True
         instance.save()
     
-    @classmethod
-    def _save_m2m(cls, _info: ResolveInfo, instance, cleaned_data):
-        products = cleaned_data.get("products", None)
-        if products is not None:
-            instance.products.set(products)
-
     @classmethod
     def perform_mutation(cls, _root, info: ResolveInfo, /, **data):
         response = super().perform_mutation(_root, info, **data)

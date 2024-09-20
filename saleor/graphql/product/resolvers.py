@@ -90,6 +90,14 @@ def resolve_tags(info: ResolveInfo):
         get_database_connection_name(info.context)
     ).all()
 
+def resolve_wishlists(info: ResolveInfo):
+    user = info.context.user
+    if user and user.is_authenticated:
+        return  models.Wishlist.objects.using(
+            get_database_connection_name(info.context)
+        ).filter(user_id=user.id).all()
+    return []
+
 
 def resolve_product(
     info: ResolveInfo,
