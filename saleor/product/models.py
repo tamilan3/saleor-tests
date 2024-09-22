@@ -276,27 +276,16 @@ class Product(SeoModel, ModelWithMetadata, ModelWithExternalReference):
     def sort_by_attribute_fields() -> list:
         return ["concatenated_values_order", "concatenated_values", "name"]
     
-# class WishlistProduct(models.Model):
-#     wishlist = models.ForeignKey('Wishlist', on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     added_at = models.DateTimeField(auto_now_add=True)  # Example of an additional field
-
-#     class Meta:
-#         unique_together = ('wishlist', 'product')
-
-# class Wishlist(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
-#     products = models.ManyToManyField(Product,through='WishlistProduct', related_name='wishlists',through_fields=('wishlist', 'product'))
-
-#     def __str__(self):
-#         return f"Wishlist of {self.user.email}"
     
-class Wishlist(models.Model):
+class Wishlist(ModelWithMetadata):
+    slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlists')
-    products = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlists')
+    products = models.ManyToManyField(Product)
+    
 
     def __str__(self):
         return f"Wishlist of {self.user.email}"
+    
 
 class ProductTranslation(SeoModelTranslationWithSlug):
     product = models.ForeignKey(

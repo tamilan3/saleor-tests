@@ -39,6 +39,7 @@ class WishlistErrorCode(Enum):
     NOT_FOUND = "not_found"
     REQUIRED = "required"
     UNIQUE = "unique"
+    
 class CollectionErrorCode(Enum):
     DUPLICATED_INPUT_ITEM = "duplicated_input_item"
     GRAPHQL_ERROR = "graphql_error"
