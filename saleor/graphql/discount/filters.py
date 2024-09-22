@@ -112,7 +112,6 @@ def filter_sale_search(qs, _, value):
             Q(name__ilike=value) | Q(rules__reward_value_type__ilike=value)
         )
     rules = PromotionRule.objects.using(qs.db).filter(reward_value=value)
-    print(qs)
     return qs.filter(Exists(rules.filter(promotion_id=OuterRef("pk")))).distinct()
 
 

@@ -11,6 +11,7 @@ class ProductAppConfig(AppConfig):
             delete_background_image,
             delete_digital_content_file,
             delete_product_media_image,
+            product_variant_channel_listing_post_save_receiver,
         )
 
         # preventing duplicate signals

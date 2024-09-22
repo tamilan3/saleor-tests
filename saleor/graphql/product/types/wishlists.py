@@ -6,6 +6,7 @@ from saleor.graphql.channel.dataloaders import ChannelBySlugLoader
 from saleor.graphql.core import ResolveInfo
 from saleor.graphql.core.context import get_database_connection_name
 from saleor.graphql.core.descriptions import ADDED_IN_314, PREVIEW_FEATURE
+from saleor.graphql.core.federation.entities import federated_entity
 from saleor.graphql.core.fields import FilterConnectionField
 from saleor.graphql.meta.types import ObjectWithMetadata
 from saleor.graphql.product.filters import ProductFilterInput, ProductWhereInput
@@ -16,20 +17,16 @@ from saleor.product.search import search_products
 
 from ...channel import ChannelContext, ChannelQsContext
 from saleor.graphql.channel.types import ChannelContextType, ChannelContextTypeWithMetadata
-from saleor.graphql.core.types.model import ModelObjectType
-from saleor.graphql.product.dataloaders.products import WishListByIdLoader
-from saleor.graphql.product.types.products import Product, ProductCountableConnection
-from saleor.permission.auth_filters import AuthorizationFilters
+from saleor.graphql.product.types.products import ProductCountableConnection
 
 from ....product import models
 from ...core.connection import CountableConnection, create_connection_slice, filter_connection_queryset
 from ...core.doc_category import DOC_CATEGORY_PRODUCTS
-from ....permission.enums import AccountPermissions
-from ...core.federation import federated_entity
 from ...account.types import User
 
 
 
+@federated_entity("id Wishlist")
 class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
     id = graphene.GlobalID(required=True, description="The ID of the Wishlist.")
     user = graphene.Field(User, description="user of this wishlist")
@@ -52,10 +49,17 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
         model = models.Wishlist
 
     @staticmethod
+    def resolve_channel(root: ChannelContext[models.Product], _info):
+        return root.channel_slug
+    
+    @staticmethod
+    def resolve_user(root: ChannelContext[models.Wishlist], _info: ResolveInfo):
+        return root.node.user
+
+    @staticmethod
     def resolve_products(
         root: ChannelContext[models.Wishlist], info: ResolveInfo, **kwargs
     ):
-        print(root.node)
         check_for_sorting_by_rank(info, kwargs)
         search = kwargs.get("search")
 
@@ -82,15 +86,12 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
             return create_connection_slice(qs, info, kwargs, ProductCountableConnection)
 
         if root.channel_slug:
-            print(root.node)
-            print("root.channel_slug is not None")
             return (
                 ChannelBySlugLoader(info.context)
                 .load(str(root.channel_slug))
                 .then(_resolve_products)
             )
         else:
-            print("root.channel_slug is None")
             return _resolve_products(None)
         
     

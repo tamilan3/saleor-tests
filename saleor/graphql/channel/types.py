@@ -79,7 +79,6 @@ class ChannelContextTypeForObjectType(ModelObjectType[T]):
 
     @staticmethod
     def resolve_id(root: ChannelContext[T], _info: ResolveInfo):
-        print(root)
         return root.node.pk
 
     @staticmethod

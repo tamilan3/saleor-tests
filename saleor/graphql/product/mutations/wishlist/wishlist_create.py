@@ -19,20 +19,20 @@ class WishlistInput(BaseInputObjectType):
     user = graphene.ID(
         description="Customer associated with the wishlist.", name="user"
     )
-
-    class Meta:
-        doc_category = DOC_CATEGORY_WISHLIST
-
-class WishlistCreateInput(WishlistInput):
     products = NonNullList(
         graphene.ID,
         description="List of products to be added to the Wishlist.",
         name="products",
     )
 
+    class Meta:
+        doc_category = DOC_CATEGORY_WISHLIST
+
+    
+
 class WishlistCreate(ModelMutation):
     class Arguments:
-        input = WishlistCreateInput(
+        input = WishlistInput(
             required=True, description="Fields required to create a Wishlist."
         )
 
@@ -59,22 +59,18 @@ class WishlistCreate(ModelMutation):
         cleaned_input["user"] = info.context.user
         return cleaned_input
     
-    @staticmethod
-    def batch_product_ids(ids):
-        _length = len(ids)
-        for i in range(0, _length, PRODUCTS_BATCH_SIZE):
-            yield ids[i : i + PRODUCTS_BATCH_SIZE]
-
-
     @classmethod
-    def post_save_action(cls, info: ResolveInfo, instance, cleaned_input):
-        product_ids = list(instance.products.values_list("id", flat=True))
-        for ids_batch in cls.batch_product_ids(product_ids):
-            collection_product_updated_task.delay(ids_batch)
+    def _save_m2m(cls, _info: ResolveInfo, instance, cleaned_data):
+        products = cleaned_data.get("products", None)
+        if products is not None:
+            instance.products.set(products)
     
+    @classmethod
+    def save(cls, info: ResolveInfo, instance, cleaned_input):
+        instance.search_index_dirty = True
+        instance.save()
+
     @classmethod
     def perform_mutation(cls, _root, info: ResolveInfo, /, **kwargs):
         result = super().perform_mutation(_root, info, **kwargs)
-        return WishlistCreate(
-            collection=ChannelContext(node=result.collection, channel_slug=None)
-        )
+        return result

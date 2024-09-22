@@ -50,7 +50,6 @@ class CategorySortField(BaseEnum):
 
     @staticmethod
     def qs_with_product_count(queryset: QuerySet, **_kwargs) -> QuerySet:
-        print("product count",queryset)
         return queryset.annotate(
             product_count=Coalesce(
                 Subquery(
@@ -67,12 +66,10 @@ class CategorySortField(BaseEnum):
 
     @staticmethod
     def qs_with_subcategory_count(queryset: QuerySet, **_kwargs) -> QuerySet:
-        print("subcatogory count",queryset)
         return queryset.annotate(subcategory_count=Count("children__id"))
 
     @staticmethod
     def qs_with_menu_order(queryset: QuerySet, **_kwargs) -> QuerySet:
-        print("menu order",queryset)
         return queryset.order_by("menu_order")
 
 

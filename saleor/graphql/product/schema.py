@@ -702,11 +702,21 @@ class ProductQueries(graphene.ObjectType):
         )
     
     @staticmethod
-    def resolve_wishlists(_root, info: ResolveInfo, **kwargs):
-        qs = resolve_wishlists(info)
-        return create_connection_slice(
-            qs, info, kwargs, WishlistCountableConnection
+    def resolve_wishlists(_root, info: ResolveInfo, *, channel=None, **kwargs):
+        requestor = get_user_or_app_from_context(info.context)
+        has_required_permissions = has_one_of_permissions(
+            requestor, ALL_PRODUCTS_PERMISSIONS
         )
+        if channel is None and not has_required_permissions:
+            channel = get_default_channel_slug_or_graphql_error(
+                allow_replica=info.context.allow_replica
+            )
+        qs = resolve_wishlists(info, channel)
+        kwargs["channel"] = channel
+        qs = filter_connection_queryset(
+            qs, kwargs, allow_replica=info.context.allow_replica
+        )
+        return create_connection_slice(qs, info, kwargs, WishlistCountableConnection)
 
 
 class ProductMutations(graphene.ObjectType):

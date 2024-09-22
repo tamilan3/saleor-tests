@@ -90,12 +90,13 @@ def resolve_tags(info: ResolveInfo):
         get_database_connection_name(info.context)
     ).all()
 
-def resolve_wishlists(info: ResolveInfo):
+def resolve_wishlists(info: ResolveInfo,channel_slug):
     user = info.context.user
     if user and user.is_authenticated:
-        return  models.Wishlist.objects.using(
+        qs = models.Wishlist.objects.using(
             get_database_connection_name(info.context)
         ).filter(user_id=user.id).all()
+        return ChannelQsContext(qs=qs, channel_slug=channel_slug)
     return []
 
 
