@@ -382,7 +382,7 @@ class ProductQueries(graphene.ObjectType):
         description="List of the Product tags.",
         doc_category=DOC_CATEGORY_TAG,
     )
-    wishlists = ConnectionField(
+    wishlists = FilterConnectionField(
         WishlistCountableConnection,
         description="List of the customer's wishlists.",
         doc_category=DOC_CATEGORY_WISHLIST,

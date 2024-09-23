@@ -30,7 +30,7 @@ from ...account.types import User
 
 
 
-class Wishlist(ChannelContextTypeWithMetadata[models.Collection]):
+class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
     id = graphene.GlobalID(required=True, description="The ID of the Wishlist.")
     user = graphene.Field(User, description="user of this wishlist")
     products = FilterConnectionField(
@@ -53,8 +53,9 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Collection]):
 
     @staticmethod
     def resolve_products(
-        root: ChannelContext[models.Collection], info: ResolveInfo, **kwargs
+        root: ChannelContext[models.Wishlist], info: ResolveInfo, **kwargs
     ):
+        print(root.node)
         check_for_sorting_by_rank(info, kwargs)
         search = kwargs.get("search")
 
@@ -62,6 +63,7 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Collection]):
         limited_channel_access = False if root.channel_slug is None else True
 
         def _resolve_products(channel):
+            
             qs = root.node.products.using(
                 get_database_connection_name(info.context)
             ).visible_to_user(requestor, channel, limited_channel_access)
@@ -80,12 +82,15 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Collection]):
             return create_connection_slice(qs, info, kwargs, ProductCountableConnection)
 
         if root.channel_slug:
+            print(root.node)
+            print("root.channel_slug is not None")
             return (
                 ChannelBySlugLoader(info.context)
                 .load(str(root.channel_slug))
                 .then(_resolve_products)
             )
         else:
+            print("root.channel_slug is None")
             return _resolve_products(None)
         
     

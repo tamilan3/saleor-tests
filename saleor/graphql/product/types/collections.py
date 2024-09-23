@@ -139,6 +139,7 @@ class Collection(ChannelContextTypeWithMetadata[models.Collection]):
     def resolve_products(
         root: ChannelContext[models.Collection], info: ResolveInfo, **kwargs
     ):
+        print(root.node.products)
         check_for_sorting_by_rank(info, kwargs)
         search = kwargs.get("search")
 
