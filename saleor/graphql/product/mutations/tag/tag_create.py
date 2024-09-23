@@ -1,6 +1,8 @@
 import graphene
 from django.core.exceptions import ValidationError
 
+from saleor.graphql.channel import ChannelContext
+
 from .....permission.enums import ProductPermissions
 from .....product import models
 from .....product.error_codes import ProductErrorCode
@@ -56,4 +58,12 @@ class TagCreate(ModelMutation):
     @classmethod
     def perform_mutation(cls, _root, info: ResolveInfo, /, **data):
         response = super().perform_mutation(_root, info, **data)
+        wishlist = getattr(response, cls._meta.return_field_name)
+
+        # Wrap product instance with ChannelContext in response
+        setattr(
+            response,
+            cls._meta.return_field_name,
+            ChannelContext(node=wishlist, channel_slug=None),
+        )
         return response

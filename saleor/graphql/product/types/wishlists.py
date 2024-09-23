@@ -30,6 +30,7 @@ from ...account.types import User
 class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
     id = graphene.GlobalID(required=True, description="The ID of the Wishlist.")
     user = graphene.Field(User, description="user of this wishlist")
+    slug =  graphene.String(description="Wishlist slug.")
     products = FilterConnectionField(
         ProductCountableConnection,
         filter=ProductFilterInput(description="Filtering options for products."),
@@ -48,13 +49,6 @@ class Wishlist(ChannelContextTypeWithMetadata[models.Wishlist]):
         interfaces = [relay.Node, ObjectWithMetadata]
         model = models.Wishlist
 
-    @staticmethod
-    def resolve_channel(root: ChannelContext[models.Product], _info):
-        return root.channel_slug
-    
-    @staticmethod
-    def resolve_user(root: ChannelContext[models.Wishlist], _info: ResolveInfo):
-        return root.node.user
 
     @staticmethod
     def resolve_products(
